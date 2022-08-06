@@ -1,0 +1,3 @@
+# rex_config mit Ablaufdatum für REDAXO 5 - *WIP*
+
+TODO...
