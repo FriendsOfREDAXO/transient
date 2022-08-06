@@ -103,7 +103,14 @@ class rex_transient
         $rows = $sql->getRows();
 
         if ($rows > 0) {
-            // TODO: remove from config?
+            /**
+             * remove config entries
+             */
+            for ($i = 0; $i < $rows; ++$i)
+            {
+                rex_config::remove($sql->getValue('namespace'), $sql->getValue('key'));
+                $sql->next();
+            }
 
             /**
              * delete transient entries
