@@ -30,12 +30,10 @@ class rex_transient
         $sql->setValue('key', $key);
         $sql->setValue('expiration', $date->format('Y-m-d H:i:s'));
 
-        try
-        {
+        try {
             $sql->insertOrUpdate();
         }
-        catch (rex_sql_exception $e)
-        {
+        catch (rex_sql_exception $e) {
             throw new rex_exception('error msg...');
         }
     }
@@ -46,7 +44,7 @@ class rex_transient
      *
      * @param string $namespace
      * @param string $key
-     * @return false|mixed
+     * @return null|mixed
      * @throws rex_sql_exception
      */
     public static function get(string $namespace, string $key)
@@ -61,7 +59,7 @@ class rex_transient
         $sql->setWhere(['namespace' => $namespace, 'key' => $key]);
 
         if ($sql->getRows() === 0) {
-            return false;
+            return null;
         }
 
         return rex_config::get($namespace, $key);
@@ -106,8 +104,7 @@ class rex_transient
             /**
              * remove config entries
              */
-            for ($i = 0; $i < $rows; ++$i)
-            {
+            for ($i = 0; $i < $rows; ++$i) {
                 rex_config::remove($sql->getValue('namespace'), $sql->getValue('key'));
                 $sql->next();
             }
