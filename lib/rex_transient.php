@@ -2,6 +2,10 @@
 
 class rex_transient
 {
+    public const MINUTE_IN_SECONDS = 60;
+    public const HOUR_IN_SECONDS = 3600;
+    public const DAY_IN_SECONDS = 86400;
+
     /**
      * add or update a transient
      *
