@@ -26,11 +26,6 @@ final class TransientTest extends TestCase
      */
     public function testNonExistingTransient(): void
     {
-        rex_transient::set(self::$namespace, self::$key, self::$value, 2);
-        $data = rex_transient::get(self::$namespace, self::$key);
-
-        sleep(3);
-
-        self::assertNull($data);
+        self::assertNull(rex_config::get('test-ns', 'mykey'), 'get() returns null when getting non-existing key');
     }
 }

@@ -18,3 +18,4 @@ installer_ignore:
   - .editorconfig
   - .eslintrc.js
   - .stylelintrc.js
+  - phpcs.xml
