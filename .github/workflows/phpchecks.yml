@@ -90,7 +90,4 @@ jobs:
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer test
         env:
-          MYSQL_DATABASE: redaxo5
-          DB_USERNAME: root
-          DB_PASSWORD: root
-          DB_PORT: 3306
+          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
