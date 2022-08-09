@@ -71,7 +71,6 @@ jobs:
       - name: Copy to Addons
         run: |
           rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' './' 'vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}'
-          vendor/redaxo/source/redaxo/bin/console package:install 'phpmailer'
           vendor/redaxo/source/redaxo/bin/console package:install '${{ github.event.repository.name }}'
 
       - name: Install test dependencies
@@ -89,5 +88,3 @@ jobs:
       - name: Run phpunit
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer test
-        env:
-          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
