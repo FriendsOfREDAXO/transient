@@ -70,7 +70,7 @@ jobs:
       # if the addon name does not match the repository name, ${{ github.event.repository.name }} must be replaced with the addon name
       - name: Copy to Addons
         run: |
-          rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' './' 'vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}'
+          rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' './' './vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}'
           vendor/redaxo/source/redaxo/bin/console package:install '${{ github.event.repository.name }}'
 
       - name: Install test dependencies
