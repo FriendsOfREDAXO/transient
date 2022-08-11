@@ -18,9 +18,12 @@ jobs:
 
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: redaxo5
         ports:
-          - 3306
+          - '8888:3306'
 
     steps:
       - uses: actions/checkout@v3
@@ -57,7 +60,7 @@ jobs:
       - name: Setup REDAXO
         run: |
           sudo /etc/init.d/mysql start
-          mysql -uroot -h127.0.0.1 -proot -e 'create database redaxo5;'
+          mysql -h 127.0.0.1 --port 8888 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS redaxo5;'
           git apply .github/workflows/default.config.yml.github-action.diff
           php .tools/bin/setup
 
