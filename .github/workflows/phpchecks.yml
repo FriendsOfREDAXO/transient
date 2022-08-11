@@ -49,18 +49,27 @@ jobs:
 #        run: less vendor/redaxo/source/redaxo/src/core/default.config.yml
 
       - name: Stop Database
-        run: sudo service mysql stop
+        run: sudo service stop mysql
 
       - name: Setup Database Config
         uses: mirromutth/mysql-action@v1.1
         with:
+          host port: 3306
+          container port: 3306
+          character set server: 'utf8mb4'
+          collation server: 'utf8mb4_bin'
           mysql version: '8.0'
           mysql database: 'redaxo5'
           mysql root password: 'root'
+          mysql user: 'root'
+          mysql password: 'root'
+
+#      - name: Setup MySQL
+#        run: mysql -h 127.0.0.1 --port 3306 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS redaxo5;'
 
       - name: Wait for MySQL
         run: |
-          while ! mysqladmin ping --host=127.0.0.1 --password=root --silent; do
+          while ! mysqladmin ping --host=127.0.0.1 --port 3306 --password=root --silent; do
             sleep 1
           done
 
@@ -90,12 +99,10 @@ jobs:
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer phpcs
 
+      - name: Test...
+        run: |
+          vendor/redaxo/source/redaxo/bin/console system:report
+
       - name: Run phpunit
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
-        env:
-          DB_CONNECTION: mysql
-          DB_DATABASE: redaxo5
-          DB_PORT: 3306
-          DB_PASSWORD: root
-          DB_USERNAME: root
         run: composer test
