@@ -16,15 +16,6 @@ jobs:
     permissions:
       contents: write  # for Git to git apply
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: redaxo5
-        ports:
-          - '8888:3306'
-
     steps:
       - uses: actions/checkout@v3
 
@@ -57,10 +48,24 @@ jobs:
 #      - name: Try to log config...
 #        run: less vendor/redaxo/source/redaxo/src/core/default.config.yml
 
+      - name: Stop Database
+        run: sudo service mysql stop
+
+      - name: Setup Database Config
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql version: '8.0'
+          mysql database: 'redaxo5'
+          mysql root password: 'root'
+
+      - name: Wait for MySQL
+        run: |
+          while ! mysqladmin ping --host=127.0.0.1 --password=root --silent; do
+            sleep 1
+          done
+
       - name: Setup REDAXO
         run: |
-          sudo /etc/init.d/mysql start
-          mysql -h 127.0.0.1 --port 8888 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS redaxo5;'
           git apply .github/workflows/default.config.yml.github-action.diff
           php .tools/bin/setup
 
@@ -85,10 +90,12 @@ jobs:
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer phpcs
 
-      - name: Test...
-        run: |
-          vendor/redaxo/source/redaxo/bin/console system:report
-
       - name: Run phpunit
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
+        env:
+          DB_CONNECTION: mysql
+          DB_DATABASE: redaxo5
+          DB_PORT: 3306
+          DB_PASSWORD: root
+          DB_USERNAME: root
         run: composer test
