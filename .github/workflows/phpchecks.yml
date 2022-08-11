@@ -105,5 +105,12 @@ jobs:
           vendor/redaxo/source/redaxo/bin/console system:report
 
       - name: Run phpunit
-        working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
+        working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name
+        env:
+          DB_HOST: 127.0.0.1
+          DB_CONNECTION: mysql
+          DB_DATABASE: redaxo5
+          DB_PORT: 3306
+          DB_PASSWORD: root
+          DB_USERNAME: root
         run: composer test
