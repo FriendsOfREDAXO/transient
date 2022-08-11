@@ -16,6 +16,8 @@ if (rex::isSetup()) {
     rex_file::getConfig($configFile)
   );
 
+  var_dump($config);
+
   // init db
   $utf8mb4 = rex_setup_importer::supportsUtf8mb4();
   $err .= rex_setup::checkDb($config, false);
