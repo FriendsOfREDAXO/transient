@@ -49,6 +49,7 @@ jobs:
 #        run: less vendor/redaxo/source/redaxo/src/core/default.config.yml
 
       - name: Stop Database
+        if: ${{ env.ACT }}
         run: sudo service stop mysql
 
       - name: Setup Database Config
