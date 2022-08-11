@@ -60,7 +60,8 @@ jobs:
       - name: Setup REDAXO
         run: |
           sudo /etc/init.d/mysql start
-          mysql -h localhost --port 3306 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS redaxo5;'
+          mysql -uroot -h127.0.0.1 -proot -e 'create database redaxo5;'
+          git apply .github/workflows/default.config.yml.github-action.diff
           php .tools/bin/setup
 
       # copy Addon files, ignore some directories...
