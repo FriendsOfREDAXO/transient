@@ -77,7 +77,7 @@ jobs:
       - name: Install dependencies
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         env:
-          COMPOSER=composer-test.json
+          COMPOSER: composer-test.json
         run: composer install --prefer-dist --no-progress
 
       - name: Run lint
