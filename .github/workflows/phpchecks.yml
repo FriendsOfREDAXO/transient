@@ -49,7 +49,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress
 
       - name: Setup Problem Matchers for PHPUnit
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
@@ -76,6 +76,8 @@ jobs:
 
       - name: Install dependencies
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
+        env:
+          COMPOSER=composer-test.json
         run: composer install --prefer-dist --no-progress
 
       - name: Run lint
@@ -87,5 +89,5 @@ jobs:
         run: composer phpcs
 
       - name: Run phpunit
-        working-directory: /
+        working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer test
