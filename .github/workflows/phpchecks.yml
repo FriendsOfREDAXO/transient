@@ -87,8 +87,11 @@ jobs:
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer phpcs
 
+      - name: Check REDAXO setup
+        run: |
+          vendor/redaxo/source/redaxo/bin/console setup:check
+
       - name: Run phpunit
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         run: |
-          vendor/redaxo/source/redaxo/bin/console setup:check
           composer test
