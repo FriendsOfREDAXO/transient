@@ -8,6 +8,8 @@ $REX['HTDOCS_PATH'] = '../';
 $REX['BACKEND_FOLDER'] = 'redaxo';
 $REX['LOAD_PAGE'] = false;
 
+var_dump(dirname(__DIR__).'/vendor/redaxo/source/redaxo/src/core/boot.php');
+
 require dirname(__DIR__).'/vendor/redaxo/source/redaxo/src/core/boot.php';
 require dirname(__DIR__).'/vendor/redaxo/source/redaxo/src/core/packages.php';
 
