@@ -63,7 +63,6 @@ jobs:
           git apply .github/workflows/default.config.yml.github-action.diff
           php .tools/bin/setup
           vendor/redaxo/source/redaxo/bin/console system:report
-
       # copy Addon files, ignore some directories...
       # install phpmailer
       # install the addon
@@ -72,7 +71,6 @@ jobs:
         run: |
           rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' --exclude='.tools' './' 'vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}'
           vendor/redaxo/source/redaxo/bin/console package:install '${{ github.event.repository.name }}'
-
       - name: Install dependencies
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         env:
@@ -87,11 +85,6 @@ jobs:
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer phpcs
 
-      - name: Check REDAXO setup
-        run: |
-          vendor/redaxo/source/redaxo/bin/console setup:check
-
       - name: Run phpunit
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
-        run: |
-          composer test
+        run: composer test
