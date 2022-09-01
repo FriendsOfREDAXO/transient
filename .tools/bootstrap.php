@@ -1,14 +1,12 @@
 <?php
 
-chdir(dirname(__DIR__).'/redaxo');
+chdir(dirname(__DIR__).'/redaxo_cms/redaxo');
 
 unset($REX);
 $REX['REDAXO'] = true;
 $REX['HTDOCS_PATH'] = '../';
 $REX['BACKEND_FOLDER'] = 'redaxo';
 $REX['LOAD_PAGE'] = false;
-
-var_dump(dirname(__DIR__).'/redaxo_cms/redaxo/src/core/boot.php');
 
 require dirname(__DIR__).'/redaxo_cms/redaxo/src/core/boot.php';
 require dirname(__DIR__).'/redaxo_cms/redaxo/src/core/packages.php';
