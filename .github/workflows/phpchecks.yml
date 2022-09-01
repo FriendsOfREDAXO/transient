@@ -34,13 +34,13 @@ jobs:
           php-version: '8.0'
           extensions: gd, intl, pdo_mysql
           coverage: none # disable xdebug, pcov
-          
+
       - name: Init database
         run: |
             sudo /etc/init.d/mysql start
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate
+#      - name: Validate composer.json and composer.lock
+#        run: composer validate
 
 #      - name: Cache Composer packages
 #        id: composer-cache
@@ -51,29 +51,35 @@ jobs:
 #          restore-keys: |
 #            ${{ runner.os }}-php-
 
-      - name: Install dependencies
-        if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest
+#      - name: Install dependencies
+#        if: steps.composer-cache.outputs.cache-hit != 'true'
+#        run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: Setup Problem Matchers for PHPUnit
-        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+      # credits https://blog.markvincze.com/download-artifacts-from-a-latest-github-release-in-sh-and-powershell/
+      - name: Download latest REDAXO release
+        run: |
+          LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/redaxo/redaxo/releases/latest)
+          REDAXO_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
+          curl -Ls -o redaxo.zip https://github.com/redaxo/redaxo/releases/download/$REDAXO_VERSION/redaxo_$REDAXO_VERSION.zip
+          unzip -oq redaxo.zip -d redaxo
+          rm redaxo.zip
 
       - name: Setup REDAXO
         run: |
           mysql -uroot -h127.0.0.1 -proot -e 'create database redaxo5;'
           git apply .github/workflows/default.config.yml.github-action.diff
           php .tools/bin/setup
-          vendor/redaxo/source/redaxo/bin/console system:report
-          
+          redaxo/bin/console system:report
+
       - name: Create user, update config
         run: |
-            php vendor/redaxo/source/redaxo/bin/console user:create myusername mypassword --admin --ansi
-            php vendor/redaxo/source/redaxo/bin/console config:set error_email 'test@redaxo.invalid' --ansi
-            
+            php redaxo/bin/console user:create myusername mypassword --admin --ansi
+            php redaxo/bin/console config:set error_email 'test@redaxo.invalid' --ansi
+
       - name: Import mock data
         run: |
-            mkdir -p $GITHUB_WORKSPACE/vendor/redaxo/source/redaxo/data/addons/backup && cp -r .github/inital-content.sql $GITHUB_WORKSPACE/vendor/redaxo/source/redaxo/data/addons/backup/
-            php vendor/redaxo/source/redaxo/bin/console setup:run -n --lang=de_de --agree-license --db-password=root --db-setup=import --db-import=inital-content --admin-username=myusername --admin-password=mypassword --ansi
+            mkdir -p $GITHUB_WORKSPACE/redaxo/data/addons/backup && cp -r .github/inital-content.sql $GITHUB_WORKSPACE/redaxo/data/addons/backup/
+            php redaxo/bin/console setup:run -n --lang=de_de --agree-license --db-password=root --db-setup=import --db-import=inital-content --admin-username=myusername --admin-password=mypassword --ansi
 
       # copy Addon files, ignore some directories...
       # install phpmailer
@@ -81,24 +87,27 @@ jobs:
       # if the addon name does not match the repository name, ${{ github.event.repository.name }} must be replaced with the addon name
       - name: Copy to Addons
         run: |
-          rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' --exclude='.tools' './' 'vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}'
-          vendor/redaxo/source/redaxo/bin/console package:install 'phpmailer'
-          vendor/redaxo/source/redaxo/bin/console package:install '${{ github.event.repository.name }}'
+          rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' --exclude='.tools' './' 'redaxo/src/addons/${{ github.event.repository.name }}'
+          redaxo/bin/console package:install 'phpmailer'
+          redaxo/bin/console package:install '${{ github.event.repository.name }}'
 
       - name: Install test dependencies
-        working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
+        working-directory: redaxo/src/addons/${{ github.event.repository.name }}
         env:
           COMPOSER: composer-test.json
         run: composer install --prefer-dist --no-progress
 
+      - name: Setup Problem Matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
       - name: Run lint
-        working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
+        working-directory: redaxo/src/addons/${{ github.event.repository.name }}
         run: composer lint
 
       - name: Run phpcs
-        working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
+        working-directory: redaxo/src/addons/${{ github.event.repository.name }}
         run: composer phpcs
 
       - name: Run phpunit
-        working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
+        working-directory: redaxo/src/addons/${{ github.event.repository.name }}
         run: composer test
