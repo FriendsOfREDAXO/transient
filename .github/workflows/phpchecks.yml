@@ -64,6 +64,7 @@ jobs:
           curl -Ls -o redaxo.zip https://github.com/redaxo/redaxo/releases/download/$REDAXO_VERSION/redaxo_$REDAXO_VERSION.zip
           unzip -oq redaxo.zip -d redaxo
           rm redaxo.zip
+          ls -la
 
       - name: Setup REDAXO
         run: |
