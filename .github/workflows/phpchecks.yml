@@ -62,7 +62,7 @@ jobs:
           REDAXO_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
           echo $REDAXO_VERSION
           curl -Ls -o redaxo.zip https://github.com/redaxo/redaxo/releases/download/$REDAXO_VERSION/redaxo_$REDAXO_VERSION.zip
-          unzip -oq redaxo.zip -d redaxo
+          unzip -oq redaxo.zip -d redaxo_cms
           rm redaxo.zip
           ls -la
 
@@ -80,8 +80,8 @@ jobs:
 
       - name: Import mock data
         run: |
-            mkdir -p $GITHUB_WORKSPACE/redaxo/data/addons/backup && cp -r .github/inital-content.sql $GITHUB_WORKSPACE/redaxo/data/addons/backup/
-            php redaxo/bin/console setup:run -n --lang=de_de --agree-license --db-password=root --db-setup=import --db-import=inital-content --admin-username=myusername --admin-password=mypassword --ansi
+            mkdir -p $GITHUB_WORKSPACE/redaxo_cms/redaxo/data/addons/backup && cp -r .github/inital-content.sql $GITHUB_WORKSPACE/redaxo_cms/redaxo/data/addons/backup/
+            php redaxo_cms/redaxo/bin/console setup:run -n --lang=de_de --agree-license --db-password=root --db-setup=import --db-import=inital-content --admin-username=myusername --admin-password=mypassword --ansi
 
       # copy Addon files, ignore some directories...
       # install phpmailer
@@ -89,12 +89,12 @@ jobs:
       # if the addon name does not match the repository name, ${{ github.event.repository.name }} must be replaced with the addon name
       - name: Copy to Addons
         run: |
-          rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' --exclude='.tools' './' 'redaxo/src/addons/${{ github.event.repository.name }}'
-          redaxo/bin/console package:install 'phpmailer'
-          redaxo/bin/console package:install '${{ github.event.repository.name }}'
+          rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' --exclude='.tools' './' 'redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}'
+          redaxo_cms/redaxo/bin/console package:install 'phpmailer'
+          redaxo_cms/redaxo/bin/console package:install '${{ github.event.repository.name }}'
 
       - name: Install test dependencies
-        working-directory: redaxo/src/addons/${{ github.event.repository.name }}
+        working-directory: redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}
         env:
           COMPOSER: composer-test.json
         run: composer install --prefer-dist --no-progress
@@ -103,13 +103,13 @@ jobs:
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Run lint
-        working-directory: redaxo/src/addons/${{ github.event.repository.name }}
+        working-directory: redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer lint
 
       - name: Run phpcs
-        working-directory: redaxo/src/addons/${{ github.event.repository.name }}
+        working-directory: redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer phpcs
 
       - name: Run phpunit
-        working-directory: redaxo/src/addons/${{ github.event.repository.name }}
+        working-directory: redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer test

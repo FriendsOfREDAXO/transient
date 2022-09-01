@@ -1,7 +1,7 @@
-diff --git a/redaxo/src/core/default.config.yml b/redaxo/src/core/default.config.yml
+diff --git a/redaxo_cms/redaxo/src/core/default.config.yml b/redaxo_cms/redaxo/src/core/default.config.yml
 index 2880a09e9..3485d830a 100644
---- a/redaxo/src/core/default.config.yml
-+++ b/redaxo/src/core/default.config.yml
+--- a/redaxo_cms/redaxo/src/core/default.config.yml
++++ b/redaxo_cms/redaxo/src/core/default.config.yml
 @@ -1,8 +1,8 @@
  setup: true
  debug:
