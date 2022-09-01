@@ -16,14 +16,14 @@ jobs:
     permissions:
       contents: write  # for Git to git apply
 
-    services:
-      mysql:
-        image: 'mariadb:10.1'
-        env:
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+#     services:
+#       mysql:
+#         image: 'mariadb:10.1'
+#         env:
+#           MYSQL_ROOT_PASSWORD: root
+#         ports:
+#           - 3306:3306
+#         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - uses: actions/checkout@v3
@@ -34,28 +34,29 @@ jobs:
           php-version: '8.0'
           extensions: gd, intl, pdo_mysql
           coverage: none # disable xdebug, pcov
+          
+      - name: Init database
+        run: |
+            sudo /etc/init.d/mysql start
 
       - name: Validate composer.json and composer.lock
         run: composer validate
 
-      #      - name: Cache Composer packages
-      #        id: composer-cache
-      #        uses: actions/cache@v2
-      #        with:
-      #          path: vendor
-      #          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
-      #          restore-keys: |
-      #            ${{ runner.os }}-php-
+#      - name: Cache Composer packages
+#        id: composer-cache
+#        uses: actions/cache@v2
+#        with:
+#          path: vendor
+#          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+#          restore-keys: |
+#            ${{ runner.os }}-php-
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Setup Problem Matchers for PHPUnit
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-
-      #      - name: Try to log config...
-      #        run: less vendor/redaxo/source/redaxo/src/core/default.config.yml
 
       - name: Setup REDAXO
         run: |
@@ -63,6 +64,17 @@ jobs:
           git apply .github/workflows/default.config.yml.github-action.diff
           php .tools/bin/setup
           vendor/redaxo/source/redaxo/bin/console system:report
+          
+      - name: Create user, update config
+        run: |
+            php vendor/redaxo/source/redaxo/bin/console user:create myusername mypassword --admin --ansi
+            php vendor/redaxo/source/redaxo/bin/console config:set error_email 'test@redaxo.invalid' --ansi
+            
+      - name: Import mock data
+        run: |
+            mkdir -p $GITHUB_WORKSPACE/vendor/redaxo/source/redaxo/data/addons/backup && cp -r .github/inital-content.sql $GITHUB_WORKSPACE/vendor/redaxo/source/redaxo/data/addons/backup/
+            php vendor/redaxo/source/redaxo/bin/console setup:run -n --lang=de_de --agree-license --db-password=root --db-setup=import --db-import=inital-content --admin-username=myusername --admin-password=mypassword --ansi
+
       # copy Addon files, ignore some directories...
       # install phpmailer
       # install the addon
@@ -70,8 +82,10 @@ jobs:
       - name: Copy to Addons
         run: |
           rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' --exclude='.tools' './' 'vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}'
+          vendor/redaxo/source/redaxo/bin/console package:install 'phpmailer'
           vendor/redaxo/source/redaxo/bin/console package:install '${{ github.event.repository.name }}'
-      - name: Install dependencies
+
+      - name: Install test dependencies
         working-directory: vendor/redaxo/source/redaxo/src/addons/${{ github.event.repository.name }}
         env:
           COMPOSER: composer-test.json
