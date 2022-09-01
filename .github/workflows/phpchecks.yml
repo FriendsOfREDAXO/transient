@@ -71,12 +71,12 @@ jobs:
           mysql -uroot -h127.0.0.1 -proot -e 'create database redaxo5;'
           git apply .github/workflows/default.config.yml.github-action.diff
           php .tools/bin/setup
-          redaxo/bin/console system:report
+          redaxo_cms/redaxo/bin/console system:report
 
       - name: Create user, update config
         run: |
-            php redaxo/bin/console user:create myusername mypassword --admin --ansi
-            php redaxo/bin/console config:set error_email 'test@redaxo.invalid' --ansi
+            php redaxo_cms/redaxo/bin/console user:create myusername mypassword --admin --ansi
+            php redaxo_cms/redaxo/bin/console config:set error_email 'test@redaxo.invalid' --ansi
 
       - name: Import mock data
         run: |
