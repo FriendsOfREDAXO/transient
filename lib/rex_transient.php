@@ -17,7 +17,7 @@ class rex_transient
      * @throws rex_sql_exception
      * @throws Exception
      */
-    public static function set(string $namespace, string $key, $value = null, int $expirationTime): void
+    public static function set(string $namespace, string $key, $value = null, int $expirationTime = self::MINUTE_IN_SECONDS): void
     {
         /**
          * set the actual config
