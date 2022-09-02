@@ -61,6 +61,7 @@ class rex_transient
         $sql = rex_sql::factory();
         $sql->setTable(rex::getTable('transient'));
         $sql->setWhere(['namespace' => $namespace, 'key' => $key]);
+        $sql->select();
 
         if ($sql->getRows() === 0) {
             return null;
