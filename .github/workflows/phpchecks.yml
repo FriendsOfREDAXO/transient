@@ -49,22 +49,18 @@ jobs:
 #          php .tools/bin/setup
 #          redaxo_cms/redaxo/bin/console system:report
 
-      - name: Setup REDAXO and Import mock data
+      - name: Setup REDAXO
         run: |
           mkdir -p $GITHUB_WORKSPACE/redaxo_cms/redaxo/data/addons/backup && cp -r .github/inital-content.sql $GITHUB_WORKSPACE/redaxo_cms/redaxo/data/addons/backup/
           php redaxo_cms/redaxo/bin/console setup:run -n --lang=de_de --agree-license --db-password=root --db-createdb=no --db-setup=normal --admin-username=admin --admin-password=adminpassword --error-email=test@redaxo.invalid --ansi
-
-      - name: Create user, update config
-        run: |
-            php redaxo_cms/redaxo/bin/console user:create myusername mypassword --admin --ansi
 
       # copy Addon files, ignore some directories...
       # install phpmailer
       # install the addon
       # if the addon name does not match the repository name, ${{ github.event.repository.name }} must be replaced with the addon name
-      - name: Copy to Addons
+      - name: Copy and install Addons
         run: |
-          rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' --exclude='.tools' './' 'redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}'
+          rsync -av --exclude='vendor' --exclude='.github' --exclude='.git' --exclude='redaxo_cms' --exclude='.tools' './' 'redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}'
           redaxo_cms/redaxo/bin/console package:install 'phpmailer'
           redaxo_cms/redaxo/bin/console package:install '${{ github.event.repository.name }}'
 
