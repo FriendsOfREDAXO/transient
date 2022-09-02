@@ -17,9 +17,6 @@ final class TransientTest extends TestCase
         rex_transient::set(self::$namespace, self::$key, self::$value, 60);
         $data = rex_transient::get(self::$namespace, self::$key);
 
-        var_dump(self::$namespace, self::$key);
-        var_dump(class_exists('rex_transient'));
-
         self::assertIsString($data);
     }
 

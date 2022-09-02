@@ -6,7 +6,7 @@
     "lint": "phplint ./ --exclude=vendor --no-cache lib",
     "phpcs": "phpcs --extensions=php --standard=phpcs.xml lib",
     "phpcbf": "phpcbf --extensions=php --standard=phpcs.xml lib",
-    "test": "phpunit tests/ --do-not-cache-result --colors=always -v --debug"
+    "test": "phpunit tests/ --do-not-cache-result --colors=always --testdox"
   },
   "autoload-dev": {
     "classmap": [
