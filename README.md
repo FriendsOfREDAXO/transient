@@ -1,4 +1,4 @@
-# rex_config mit Ablaufdatum für REDAXO 5 - *WIP* :construction:
+# rex_config mit Ablaufdatum für REDAXO 5
 
 Dieses Addon ermöglicht es, rex_config-Einträge mit Ablaufdatum anzulegen. Das kann nützlich sein, wenn man z.B. API-Auth-Codes nutzt die nur eine gewisse Zeit lang gültig sind.
 
