@@ -16,15 +16,6 @@ jobs:
     permissions:
       contents: write  # for Git to git apply
 
-#     services:
-#       mysql:
-#         image: 'mariadb:10.1'
-#         env:
-#           MYSQL_ROOT_PASSWORD: root
-#         ports:
-#           - 3306:3306
-#         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
     steps:
       - uses: actions/checkout@v3
 
@@ -38,22 +29,8 @@ jobs:
       - name: Init database
         run: |
             sudo /etc/init.d/mysql start
-
-#      - name: Validate composer.json and composer.lock
-#        run: composer validate
-
-#      - name: Cache Composer packages
-#        id: composer-cache
-#        uses: actions/cache@v2
-#        with:
-#          path: vendor
-#          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
-#          restore-keys: |
-#            ${{ runner.os }}-php-
-
-#      - name: Install dependencies
-#        if: steps.composer-cache.outputs.cache-hit != 'true'
-#        run: composer install --prefer-dist --no-progress --no-suggest
+            mysql -uroot -h127.0.0.1 -proot -e 'create database redaxo5;'
+            git apply .github/workflows/default.config.yml.github-action.diff
 
       # credits https://blog.markvincze.com/download-artifacts-from-a-latest-github-release-in-sh-and-powershell/
       - name: Download latest REDAXO release
@@ -64,24 +41,23 @@ jobs:
           curl -Ls -o redaxo.zip https://github.com/redaxo/redaxo/releases/download/$REDAXO_VERSION/redaxo_$REDAXO_VERSION.zip
           unzip -oq redaxo.zip -d redaxo_cms
           rm redaxo.zip
-          ls -la
 
-      - name: Setup REDAXO
+#      - name: Setup REDAXO
+#        run: |
+#          mysql -uroot -h127.0.0.1 -proot -e 'create database redaxo5;'
+#          git apply .github/workflows/default.config.yml.github-action.diff
+#          php .tools/bin/setup
+#          redaxo_cms/redaxo/bin/console system:report
+
+      - name: Setup REDAXO and Import mock data
         run: |
-          mysql -uroot -h127.0.0.1 -proot -e 'create database redaxo5;'
-          git apply .github/workflows/default.config.yml.github-action.diff
-          php .tools/bin/setup
-          redaxo_cms/redaxo/bin/console system:report
+          mkdir -p $GITHUB_WORKSPACE/redaxo_cms/redaxo/data/addons/backup && cp -r .github/inital-content.sql $GITHUB_WORKSPACE/redaxo_cms/redaxo/data/addons/backup/
+          php redaxo_cms/redaxo/bin/console setup:run -n --lang=de_de --agree-license --db-password=root --db-setup=import --db-import=inital-content --admin-username=myusername --admin-password=mypassword --ansi
 
       - name: Create user, update config
         run: |
             php redaxo_cms/redaxo/bin/console user:create myusername mypassword --admin --ansi
             php redaxo_cms/redaxo/bin/console config:set error_email 'test@redaxo.invalid' --ansi
-
-      - name: Import mock data
-        run: |
-            mkdir -p $GITHUB_WORKSPACE/redaxo_cms/redaxo/data/addons/backup && cp -r .github/inital-content.sql $GITHUB_WORKSPACE/redaxo_cms/redaxo/data/addons/backup/
-            php redaxo_cms/redaxo/bin/console setup:run -n --lang=de_de --agree-license --db-password=root --db-setup=import --db-import=inital-content --admin-username=myusername --admin-password=mypassword --ansi
 
       # copy Addon files, ignore some directories...
       # install phpmailer
@@ -96,7 +72,7 @@ jobs:
       - name: Install test dependencies
         working-directory: redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}
         env:
-          COMPOSER: composer-test.json
+          COMPOSER: composer.json
         run: composer install --prefer-dist --no-progress
 
       - name: Setup Problem Matchers for PHPUnit
