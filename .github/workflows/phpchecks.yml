@@ -26,12 +26,6 @@ jobs:
           extensions: gd, intl, pdo_mysql
           coverage: none # disable xdebug, pcov
 
-      - name: Init database
-        run: |
-            sudo /etc/init.d/mysql start
-            mysql -uroot -h127.0.0.1 -proot -e 'create database redaxo5;'
-            git apply .github/workflows/default.config.yml.github-action.diff
-
       # credits https://blog.markvincze.com/download-artifacts-from-a-latest-github-release-in-sh-and-powershell/
       - name: Download latest REDAXO release
         run: |
@@ -41,6 +35,12 @@ jobs:
           curl -Ls -o redaxo.zip https://github.com/redaxo/redaxo/releases/download/$REDAXO_VERSION/redaxo_$REDAXO_VERSION.zip
           unzip -oq redaxo.zip -d redaxo_cms
           rm redaxo.zip
+
+      - name: Init database
+        run: |
+            sudo /etc/init.d/mysql start
+            mysql -uroot -h127.0.0.1 -proot -e 'create database redaxo5;'
+            git apply .github/workflows/default.config.yml.github-action.diff
 
 #      - name: Setup REDAXO
 #        run: |
