@@ -4,9 +4,19 @@ use PHPUnit\Framework\TestCase;
 
 final class TransientTest extends TestCase
 {
-    protected static string $namespace = 'unittest';
-    protected static string $key = 'unittest';
+    protected static string $namespace;
+    protected static string $key;
     protected static string $value = 'value';
+
+    /**
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $uid = uniqid('unittest', false);
+        self::$namespace = $uid;
+        self::$key = $uid;
+    }
 
     /**
      * @return void
@@ -26,6 +36,17 @@ final class TransientTest extends TestCase
      */
     public function testNonExistingTransient(): void
     {
-        self::assertNull(rex_config::get('test-ns', 'mykey'), 'get() returns null when getting non-existing key');
+        self::assertNull(rex_transient::get('test-ns', 'mykey'), 'get() returns null when getting non-existing key');
+    }
+
+    /**
+     * remove test transient
+     *
+     * @return void
+     * @throws rex_sql_exception
+     */
+    public function tearDown(): void
+    {
+        rex_transient::remove(self::$namespace, self::$key);
     }
 }
