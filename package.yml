@@ -12,6 +12,8 @@ installer_ignore:
   - .git
   - .gitignore
   - .github
+  - tests
+  - .tools
   - package.json
   - yarn.lock
   - resources
@@ -19,3 +21,6 @@ installer_ignore:
   - .eslintrc.js
   - .stylelintrc.js
   - phpcs.xml
+  - phpunit.xml.dist
+  - composer.json
+  - composer
