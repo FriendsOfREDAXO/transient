@@ -40,6 +40,23 @@ final class TransientTest extends TestCase
     }
 
     /**
+     * @return void
+     * @throws rex_sql_exception
+     */
+    public function testRemoveTransient(): void
+    {
+        $key = self::$key . '_rm';
+        
+        rex_transient::set(self::$namespace, $key, self::$value, 60);
+        $data = rex_transient::get(self::$namespace, $key, self::$value, 60);
+        self::assertIsString($data);
+
+        rex_transient::remove(self::$namespace, $key);
+        $data = rex_transient::get(self::$namespace, $key, self::$value, 60);
+        self::assertNull($data);
+    }
+
+    /**
      * remove test transient
      *
      * @return void
