@@ -4,7 +4,11 @@ Dieses Addon ermöglicht es, rex_config-Einträge mit Ablaufdatum anzulegen. Das
 
 ```php
 // null wenn abgelaufen/nicht vorhanden
-rex_transient::get('namespace', 'key');
+$apiKey = rex_transient::get('namespace', 'key');
+
+if (is_null($apiKey)) {
+  // get new api key...
+}
 
 // im letzten Parameter wird die Zeit in Sekunden angegeben
 rex_transient::set('namespace', 'key', 'value', 60);
