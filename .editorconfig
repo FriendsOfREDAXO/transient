@@ -4,7 +4,7 @@ root = true
 
 [*]
 indent_style = space
-indent_size = 2
+indent_size = 4
 end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
@@ -41,6 +41,3 @@ ij_php_blank_lines_after_class_header = 0
 ij_php_blank_lines_before_class_end = 0
 ij_php_else_if_style = separate
 ij_any_else_on_new_line = false
-
-[*.html]
-indent_size = 4
