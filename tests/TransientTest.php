@@ -1,69 +1,45 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-
-final class TransientTest extends TestCase
+beforeEach(function ()
 {
-    protected static string $namespace;
-    protected static string $key;
-    protected static string $value = 'value';
+    $uid = uniqid('unittest', false);
 
-    /**
-     * @return void
-     */
-    public function setUp(): void
-    {
-        $uid = uniqid('unittest', false);
-        self::$namespace = $uid;
-        self::$key = $uid;
-    }
+    $this->namespace = $uid;
+    $this->key = $uid;
+    $this->value = 'value';
+});
 
-    /**
-     * @return void
-     * @throws rex_sql_exception
-     */
-    public function testExistingTransient(): void
-    {
-        rex_transient::set(self::$namespace, self::$key, self::$value, 60);
-        $data = rex_transient::get(self::$namespace, self::$key);
+test('expect transient to be a string', function ()
+{
+    rex_transient::set($this->namespace, $this->key, $this->value, 60);
+    $data = rex_transient::get($this->namespace, $this->key);
 
-        self::assertIsString($data);
-    }
+    expect($data)->toBeString();
+});
 
-    /**
-     * @return void
-     * @throws rex_sql_exception
-     */
-    public function testNonExistingTransient(): void
-    {
-        self::assertNull(rex_transient::get('test-ns', 'mykey'), 'get() returns null when getting non-existing key');
-    }
+test('expect transient to be null', function ()
+{
+    $data = rex_transient::get('test-ns', 'mykey');
 
-    /**
-     * @return void
-     * @throws rex_sql_exception
-     */
-    public function testRemoveTransient(): void
-    {
-        $key = self::$key . '_rm';
-        
-        rex_transient::set(self::$namespace, $key, self::$value, 60);
-        $data = rex_transient::get(self::$namespace, $key, self::$value, 60);
-        self::assertIsString($data);
+    expect($data)->toBeNull();
+});
 
-        rex_transient::remove(self::$namespace, $key);
-        $data = rex_transient::get(self::$namespace, $key, self::$value, 60);
-        self::assertNull($data);
-    }
+test('expect transient to be removed', function ()
+{
+    $key = $this->key . '_rm';
 
-    /**
-     * remove test transient
-     *
-     * @return void
-     * @throws rex_sql_exception
-     */
-    public function tearDown(): void
-    {
-        rex_transient::remove(self::$namespace, self::$key);
-    }
-}
+    rex_transient::set($this->namespace, $key, $this->value, 60);
+    $data = rex_transient::get($this->namespace, $key);
+
+    expect($data)->toBeString();
+
+    rex_transient::remove($this->namespace, $key);
+    $data = rex_transient::get($this->namespace, $key);
+
+    expect($data)->toBeNull();
+});
+
+afterEach(function ()
+{
+    rex_transient::remove($this->namespace, $this->key);
+});

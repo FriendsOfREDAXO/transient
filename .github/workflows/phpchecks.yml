@@ -62,9 +62,6 @@ jobs:
           COMPOSER: composer.json
         run: composer install --prefer-dist --no-progress
 
-      - name: Setup Problem Matchers for PHPUnit
-        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-
       - name: Run lint
         working-directory: redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer lint
@@ -73,6 +70,6 @@ jobs:
         working-directory: redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer phpcs
 
-      - name: Run phpunit
+      - name: Run pest
         working-directory: redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}
         run: composer test
