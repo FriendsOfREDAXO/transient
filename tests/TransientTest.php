@@ -39,6 +39,13 @@ test('expect transient to be removed', function ()
     expect($data)->toBeNull();
 });
 
+test('constants', function ()
+{
+    expect(rex_transient::MINUTE_IN_SECONDS)->toEqual(60);
+    expect(rex_transient::HOUR_IN_SECONDS )->toEqual(3600);
+    expect(rex_transient::DAY_IN_SECONDS )->toEqual(86400);
+});
+
 afterEach(function ()
 {
     rex_transient::remove($this->namespace, $this->key);
