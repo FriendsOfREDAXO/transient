@@ -123,4 +123,27 @@ class rex_transient
             $sql->delete();
         }
     }
+
+    /**
+     * @param int $minutes
+     * @return float|int
+     */
+    public static function minutes(int $minutes = 1) {
+        return $minutes * self::MINUTE_IN_SECONDS;
+    }
+
+    /**
+     * @param int $hours
+     * @return float|int
+     */
+    public static function hours(int $hours = 1) {
+        return $hours * self::HOUR_IN_SECONDS;
+    }
+
+    /**
+     * @param int $days
+     */
+    public static function days(int $days = 1) {
+        return $days * self::DAY_IN_SECONDS;
+    }
 }

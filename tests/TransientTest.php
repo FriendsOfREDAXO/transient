@@ -41,6 +41,16 @@ test('expect transient to be removed', function ()
 
 test('constants', function ()
 {
+    expect(rex_transient::minutes(1))->toEqual(60);
+    expect(rex_transient::minutes(2))->toEqual(120);
+    expect(rex_transient::hours(1))->toEqual(3600);
+    expect(rex_transient::hours(2))->toEqual(7200);
+    expect(rex_transient::days(1))->toEqual(86400);
+    expect(rex_transient::days(2))->toEqual(172800);
+});
+
+test('helpers', function ()
+{
     expect(rex_transient::MINUTE_IN_SECONDS)->toEqual(60);
     expect(rex_transient::HOUR_IN_SECONDS )->toEqual(3600);
     expect(rex_transient::DAY_IN_SECONDS )->toEqual(86400);

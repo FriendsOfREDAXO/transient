@@ -21,6 +21,11 @@ rex_transient::remove('namespace', 'key');
 rex_transient::MINUTE_IN_SECONDS // 60 Sekunden
 rex_transient::HOUR_IN_SECONDS // 3600 Sekunden
 rex_transient::DAY_IN_SECONDS // 86400 Sekunden
+
+// verfügbare Helper-Funktionen
+rex_transient::minutes(int $minutes = 1); // 60 Sekunden
+rex_transient::hours(int $hours = 1); // 3600 Sekunden
+rex_transient::days(int $days = 1); // 86400 Sekunden
 ```
 
 ## Features
