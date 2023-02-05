@@ -27,19 +27,11 @@ class rex_transient
         $date = new DateTime();
         $date->modify("+ $expirationTime seconds");
 
-        $sql = rex_sql::factory();
-        $sql->setTable(rex::getTable('transient'));
-        $sql->setValue('uid', $namespace . '_' . $key);
-        $sql->setValue('namespace', $namespace);
-        $sql->setValue('key', $key);
-        $sql->setValue('expiration', $date->format('Y-m-d H:i:s'));
+        if (rex_config::get('transient', $namespace . '_' . $key) !== null) {
+            rex_config::remove('transient', $namespace . '_' . $key);
+        }
 
-        try {
-            $sql->insertOrUpdate();
-        }
-        catch (rex_sql_exception $e) {
-            throw new rex_exception('error msg...');
-        }
+        rex_config::set('transient', $namespace . '_' . $key, $date->format('Y-m-d H:i:s'));
     }
 
     /**
@@ -58,12 +50,9 @@ class rex_transient
          */
         self::clear();
 
-        $sql = rex_sql::factory();
-        $sql->setTable(rex::getTable('transient'));
-        $sql->setWhere(['namespace' => $namespace, 'key' => $key]);
-        $sql->select();
+        $transient = rex_config::get('transient', $namespace . '_' . $key);
 
-        if ($sql->getRows() === 0) {
+        if (!$transient) {
             return null;
         }
 
@@ -81,11 +70,7 @@ class rex_transient
     public static function remove(string $namespace, string $key): void
     {
         rex_config::remove($namespace, $key);
-
-        $sql = rex_sql::factory();
-        $sql->setTable(rex::getTable('transient'));
-        $sql->setWhere(['uid' => $namespace . '_' . $key]);
-        $sql->delete();
+        rex_config::remove('transient', $namespace . '_' . $key);
     }
 
     /**
@@ -100,8 +85,10 @@ class rex_transient
         $dateTime = $date->format('Y-m-d H:i:s');
 
         $sql = rex_sql::factory();
-        $sql->setTable(rex::getTable('transient'));
-        $sql->setWhere("expiration <= '$dateTime'");
+        $sql->setTable(rex::getTable('config'));
+        $sql->setWhere('namespace = :namespace', ['namespace' => 'transient']);
+        $sql->setWhere('CAST(`value` AS DATETIME) <= :date', ['date' => $dateTime]);
+
         $sql->select();
         $rows = $sql->getRows();
 
@@ -118,8 +105,8 @@ class rex_transient
              * delete transient entries
              */
             $sql = rex_sql::factory();
-            $sql->setTable(rex::getTable('transient'));
-            $sql->setWhere("expiration <= '$dateTime'");
+            $sql->setTable(rex::getTable('config'));
+            $sql->setWhere('CAST(`value` AS DATETIME) <= :date', ['date' => $dateTime]);
             $sql->delete();
         }
     }
@@ -144,6 +131,7 @@ class rex_transient
 
     /**
      * @param int $days
+     * @return float|int
      */
     public static function days(int $days = 1)
     {
