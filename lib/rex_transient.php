@@ -14,7 +14,6 @@ class rex_transient
      * @param mixed $value
      * @param int $expirationTime in seconds
      * @return void
-     * @throws rex_sql_exception
      * @throws Exception
      */
     public static function set(string $namespace, string $key, $value = null, int $expirationTime = self::MINUTE_IN_SECONDS): void
@@ -65,7 +64,6 @@ class rex_transient
      * @param string $namespace
      * @param string $key
      * @return void
-     * @throws rex_sql_exception
      */
     public static function remove(string $namespace, string $key): void
     {
