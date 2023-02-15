@@ -1,6 +1,6 @@
 # rex_config mit Ablaufdatum für REDAXO 5
 
-Dieses Addon ermöglicht es, rex_config-Einträge mit Ablaufdatum anzulegen. Das kann nützlich sein, wenn man z.B. API-Auth-Codes nutzt die nur eine gewisse Zeit lang gültig sind.
+Dieses Addon ermöglicht es, rex_config-Einträge mit Ablaufdatum anzulegen. Das kann nützlich sein, wenn man z.B. API-Auth-Codes nutzt, die nur eine gewisse Zeit lang gültig sind.
 
 ```php
 // null wenn abgelaufen/nicht vorhanden
@@ -30,11 +30,11 @@ rex_transient::days(int $days = 1); // 86400 Sekunden
 
 ## Features
 
-Über das Addon können rex_config-Einträge gesetzt werden, die automatisch nach einer gewissen Zeit wieder gelöscht werden. Dabei funktioniert das Addon ziemlich genau wie rex_config, nur muss beim Anlegen ein Zeit in Sekunden gesetzt werden um das Ablaufdatum festzusetzen.
+Über das Addon können rex_config-Einträge gesetzt werden, die automatisch nach einer gewissen Zeit wieder gelöscht werden. Dabei funktioniert das Addon ziemlich genau wie rex_config, nur muss beim Anlegen eine Zeit in Sekunden gesetzt werden, um das Ablaufdatum festzusetzen.
 
 ## Installation
 
-~Im REDAXO-Installer das Addon `transient`,~ alternativ die aktuellste Beta-Version auf [GitHub](../../tree/master) herunterladen und installieren. Das Addon verfügt über keine eigene Einstellungsseite.
+~Im REDAXO-Installer das Addon `transient`,~ alternativ die aktuelle Beta-Version auf [GitHub](../../tree/master) herunterladen und installieren. Das Addon verfügt über keine eigene Einstellungsseite.
 
 ## Lizenz
 
