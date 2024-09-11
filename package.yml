@@ -1,6 +1,6 @@
 package: transient
 version: '0.0.1-dev'
-author: 'eaCe'
+author: Friends Of REDAXO
 
 requires:
   redaxo: ^5.12.0
