@@ -38,9 +38,4 @@ rex_transient::days(int $days = 1); // 86400 Sekunden
 
 ## Lizenz
 
-[MIT Lizenz](https://github.com/eaCe/transient/blob/master/LICENSE)
-
-## Autoren
-
-**eaCe**
-https://github.com/eaCe
+[MIT Lizenz](https://github.com/friendsofredaxo/transient/blob/master/LICENSE)
